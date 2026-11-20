@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Inicia sesión en ReservaCECAR – Sistema de gestión de reservas para centros de servicios." />
+  <title>ReservaCECAR – Iniciar Sesión</title>
+
+  <!-- Hojas de estilo -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+</head>
+<body>
+
+  <!-- ===== PÁGINA DE LOGIN ===== -->
+  <div class="login-page">
+    <div class="login-card">
+
+      <!-- Logo y nombre del sistema -->
+      <div class="login-logo">
+        <div class="login-logo-icon">📅</div>
+        <div class="login-logo-text">
+          <h1>ReservaCECAR</h1>
+          <small>Grupo08 – Centro de Servicios</small>
+        </div>
+      </div>
+
+      <!-- Formulario de inicio de sesión -->
+      <div class="login-form">
+        <h2>Bienvenido</h2>
+        <p>Ingresa tus credenciales para acceder al sistema</p>
+
+        <form id="loginForm" novalidate>
+
+          <!-- Campo usuario -->
+          <div class="form-group">
+            <label class="form-label" for="inputUsuario">
+              Usuario <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="inputUsuario"
+              name="usuario"
+              placeholder="correo@cecar.edu.co"
+              autocomplete="username"
+              required
+            />
+            <span class="field-error" id="errorUsuario">El usuario es obligatorio</span>
+          </div>
+
+          <!-- Campo contraseña -->
+          <div class="form-group">
+            <label class="form-label" for="inputClave">
+              Contraseña <span class="required">*</span>
+            </label>
+            <input
+              type="password"
+              id="inputClave"
+              name="clave"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+            />
+            <span class="field-error" id="errorClave">La contraseña es obligatoria</span>
+          </div>
+
+          <!-- Botón ingresar -->
+          <button type="submit" class="btn btn-primary" id="btnLogin" style="width:100%;margin-top:.5rem;padding:.75rem">
+            Iniciar Sesión
+          </button>
+
+          <!-- Mensaje de error general del servidor -->
+          <div id="loginError" class="hidden" style="
+            margin-top:1rem;
+            padding:.75rem 1rem;
+            background:rgba(248,81,73,.12);
+            border:1px solid var(--accent-red);
+            border-radius:var(--radius-md);
+            color:var(--accent-red);
+            font-size:.875rem;
+            text-align:center;
+            line-height:1.45;
+          "></div>
+        </form>
+      </div>
+
+      <!-- Pie del card -->
+      <p style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-muted)">
+        Sistema exclusivo para gestores autorizados del centro
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    /* =====================================================
+       Lógica del formulario de login
+       ===================================================== */
+
+    /* Si ya hay sesión activa, redirigir al dashboard */
+    if (sessionStorage.getItem('token')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    var form       = document.getElementById('loginForm');
+    var btnLogin   = document.getElementById('btnLogin');
+    var loginError = document.getElementById('loginError');
+
+    /* Manejar envío del formulario */
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var usuario = document.getElementById('inputUsuario').value.trim();
+      var clave   = document.getElementById('inputClave').value.trim();
+
+      /* Limpiar errores previos */
+      loginError.classList.add('hidden');
+      document.getElementById('errorUsuario').classList.remove('visible');
+      document.getElementById('errorClave').classList.remove('visible');
+      document.getElementById('inputUsuario').classList.remove('error');
+      document.getElementById('inputClave').classList.remove('error');
+
+      /* Validar campos requeridos */
+      var hayError = false;
+      if (!usuario) {
+        document.getElementById('errorUsuario').classList.add('visible');
+        document.getElementById('inputUsuario').classList.add('error');
+        hayError = true;
+      }
+      if (!clave) {
+        document.getElementById('errorClave').classList.add('visible');
+        document.getElementById('inputClave').classList.add('error');
+        hayError = true;
+      }
+      if (hayError) return;
+
+      /* Deshabilitar botón mientras carga */
+      btnLogin.disabled = true;
+      btnLogin.textContent = 'Entrando...';
+
+      /* Llamar a la función de login (auth.js) */
+      login(usuario, clave)
+        .catch(function(err) {
+          loginError.textContent = err.message || 'Error al iniciar sesión. Verifica tus credenciales o conexión.';
+          loginError.classList.remove('hidden');
+        })
+        .finally(function() {
+          btnLogin.disabled = false;
+          btnLogin.textContent = 'Iniciar Sesión';
+        });
+    });
+  </script>
+</body>
+</html>

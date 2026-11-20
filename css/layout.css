@@ -1,0 +1,507 @@
+/* =========================================================
+   layout.css – Navbar, Sidebar, layout principal, responsive
+   ReservaCECAR Frontend – Grupo08
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   APP SHELL – Estructura de la aplicación
+   --------------------------------------------------------- */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------------------------------------------------------
+   SIDEBAR – Panel lateral de navegación
+   --------------------------------------------------------- */
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+  transition: transform var(--transition-normal);
+  overflow-y: auto;
+}
+
+/* Encabezado del sidebar con logo */
+.sidebar-header {
+  padding: var(--space-5) var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--navbar-height);
+}
+
+.sidebar-logo {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.sidebar-brand small {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* Navegación del sidebar */
+.sidebar-nav {
+  flex: 1;
+  padding: var(--space-4) var(--space-3);
+}
+
+.sidebar-section-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: var(--space-3) var(--space-3) var(--space-2);
+}
+
+/* Item de navegación */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  margin-bottom: var(--space-1);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Item activo (página actual) */
+.nav-item.active {
+  background-color: rgba(88, 166, 255, 0.15);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.nav-item.active .nav-icon {
+  filter: none;
+}
+
+.nav-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Pie del sidebar con info de sesión */
+.sidebar-footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+}
+
+.sidebar-avatar {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0d1117;
+  flex-shrink: 0;
+}
+
+.sidebar-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-user-role {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* Botón de logout en el sidebar */
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+  border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.btn-logout:hover {
+  color: var(--accent-red);
+  background: rgba(248, 81, 73, 0.1);
+}
+
+/* ---------------------------------------------------------
+   NAVBAR – Barra superior de la app
+   --------------------------------------------------------- */
+.navbar {
+  height: var(--navbar-height);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(8px);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.navbar-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Botón hamburguesa (solo en mobile) */
+.sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.navbar-company {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.navbar-company span {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------
+   MAIN CONTENT – Área de contenido principal
+   --------------------------------------------------------- */
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-content {
+  padding: var(--space-6);
+  flex: 1;
+}
+
+/* Encabezado de cada página */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.page-header-info h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.page-header-info p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+  margin-bottom: 0;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------
+   DASHBOARD – Grid de módulos
+   --------------------------------------------------------- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+/* Stats rápidas en el dashboard */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.stat-icon-blue   { background: rgba(88, 166, 255, 0.15); }
+.stat-icon-green  { background: rgba(63, 185, 80, 0.15); }
+.stat-icon-yellow { background: rgba(210, 153, 34, 0.15); }
+.stat-icon-purple { background: rgba(188, 140, 255, 0.15); }
+
+.stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+}
+
+/* ---------------------------------------------------------
+   LOGIN PAGE
+   --------------------------------------------------------- */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at top left, rgba(88, 166, 255, 0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at bottom right, rgba(188, 140, 255, 0.08) 0%, transparent 60%),
+              var(--bg-primary);
+  padding: var(--space-6);
+}
+
+.login-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-10) var(--space-8);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  animation: slideUp 400ms ease;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+.login-logo-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+.login-logo-text h1 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-logo-text small {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  display: block;
+}
+
+.login-form h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+  text-align: center;
+}
+
+.login-form p {
+  text-align: center;
+  margin-bottom: var(--space-6);
+  font-size: var(--font-size-sm);
+}
+
+/* ---------------------------------------------------------
+   OVERLAY del sidebar en mobile
+   --------------------------------------------------------- */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.active {
+  display: block;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE – Mobile first
+   --------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Sidebar se oculta y se activa desde botón */
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* El botón hamburguesa aparece en mobile */
+  .sidebar-toggle {
+    display: flex;
+    align-items: center;
+  }
+
+  /* El contenido ocupa todo el ancho */
+  .main-content {
+    margin-left: 0;
+  }
+
+  /* Formularios de una columna en mobile */
+  .form-row,
+  .form-row-3 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Page content con menos padding */
+  .page-content {
+    padding: var(--space-4);
+  }
+
+  /* Dashboard cards en 1 o 2 columnas */
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    flex-direction: column;
+  }
+  .login-card {
+    padding: var(--space-6) var(--space-5);
+  }
+  .modal {
+    max-width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 95vh;
+  }
+}

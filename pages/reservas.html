@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gestión de reservas del centro de servicios ReservaCECAR." />
+  <title>Reservas – ReservaCECAR</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">📅</div>
+      <div class="sidebar-brand">ReservaCECAR<small>Grupo08</small></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">Principal</div>
+      <a href="../dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Gestión</div>
+      <a href="clientes.html" class="nav-item"><span class="nav-icon">👤</span> Clientes</a>
+      <a href="especialidades.html" class="nav-item"><span class="nav-icon">🌟</span> Especialidades</a>
+      <a href="profesionales.html" class="nav-item"><span class="nav-icon">👨‍💼</span> Profesionales</a>
+      <a href="servicios.html" class="nav-item"><span class="nav-icon">🛎️</span> Servicios</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Operación</div>
+      <a href="horarios.html" class="nav-item"><span class="nav-icon">🕐</span> Horarios</a>
+      <a href="eventualidades.html" class="nav-item"><span class="nav-icon">⚠️</span> Eventualidades</a>
+      <a href="disponibilidad.html" class="nav-item"><span class="nav-icon">📊</span> Disponibilidad</a>
+      <a href="reservas.html" class="nav-item active"><span class="nav-icon">📋</span> Reservas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="avatarInicial">G</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="userName">Gestor</div>
+          <div class="sidebar-user-role" id="companyName">Grupo08</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <span class="navbar-title">Reservas</span>
+      </div>
+      <div class="navbar-right">
+        <span class="navbar-company">Empresa: <span>Grupo08</span></span>
+      </div>
+    </nav>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h1>Gestión de Reservas</h1>
+          <p>Registra, modifica y cancela las reservas de los clientes.</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-primary" id="btnNuevaReserva">➕ Nueva Reserva</button>
+        </div>
+      </div>
+
+      <!-- Filtros por rango de fechas -->
+      <div class="filters-bar">
+        <div class="form-group">
+          <label class="form-label">Fecha inicio</label>
+          <input type="date" id="filtroFechaInicio" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha fin</label>
+          <input type="date" id="filtroFechaFin" />
+        </div>
+        <button class="btn btn-secondary" id="btnFiltrarReservas">Filtrar</button>
+        <button class="btn btn-secondary" id="btnTodasReservas">Todas</button>
+      </div>
+
+      <!-- Tabla de reservas -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Lista de Reservas</span>
+          <span class="text-muted" id="totalReservas" style="font-size:.875rem"></span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Fecha y Hora</th>
+                <th>Servicio</th>
+                <th>Cliente</th>
+                <th>Profesional</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="bodyReservas">
+              <tr><td colspan="7" class="table-empty">Cargando reservas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL CREAR RESERVA -->
+<div class="modal-overlay hidden" id="modalReserva">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title" id="modalResTitulo">Nueva Reserva</span>
+      <button class="modal-close" onclick="cerrarModalRes()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="formReserva" novalidate>
+        <input type="hidden" id="resId" />
+
+        <!-- Fecha y Servicio -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Fecha y Hora <span class="required">*</span></label>
+            <input type="datetime-local" id="resFecha" required />
+            <span class="field-error" id="errResFecha">Obligatorio</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Servicio <span class="required">*</span></label>
+            <select id="resServicio" required>
+              <option value="">Selecciona un servicio...</option>
+            </select>
+            <span class="field-error" id="errResServicio">Selecciona un servicio</span>
+          </div>
+        </div>
+
+        <!-- Profesional (opcional) -->
+        <div class="form-group">
+          <label class="form-label">Profesional (opcional)</label>
+          <select id="resProfesional">
+            <option value="">Sin preferencia</option>
+          </select>
+        </div>
+
+        <!-- Toggle tipo de cliente -->
+        <div style="display:flex;gap:1rem;margin-bottom:1rem" id="toggleCliente">
+          <button type="button" class="btn btn-primary" id="btnClienteRegistrado" onclick="mostrarTipoCliente('registrado')">👤 Cliente Registrado</button>
+          <button type="button" class="btn btn-secondary" id="btnClienteNuevo" onclick="mostrarTipoCliente('nuevo')">🆕 Cliente Nuevo</button>
+        </div>
+
+        <!-- CLIENTE REGISTRADO -->
+        <div id="bloqueClienteRegistrado">
+          <div class="card" style="padding:1rem;margin-bottom:1rem;background:var(--bg-tertiary)">
+            <div style="display:flex;gap:.75rem;align-items:flex-end">
+              <div class="form-group" style="flex:1;margin-bottom:0">
+                <label class="form-label">Buscar cliente por documento</label>
+                <input type="text" id="buscarDocRes" placeholder="Número de documento..." />
+              </div>
+              <button type="button" class="btn btn-secondary" id="btnBuscarClienteRes">Buscar</button>
+            </div>
+            <div id="infoClienteEncontrado" class="hidden" style="margin-top:1rem;padding:.75rem;background:rgba(88,166,255,.1);border:1px solid var(--accent-blue);border-radius:var(--radius-md)">
+              <strong id="nombreClienteEncontrado"></strong><br>
+              <small id="docClienteEncontrado" style="color:var(--text-muted)"></small>
+              <input type="hidden" id="resClienteId" />
+            </div>
+          </div>
+        </div>
+
+        <!-- CLIENTE NUEVO -->
+        <div id="bloqueClienteNuevo" class="hidden">
+          <div class="card" style="padding:1rem;background:var(--bg-tertiary)">
+            <p style="font-size:.875rem;margin-bottom:1rem;color:var(--text-secondary)">
+              Los datos del cliente nuevo se registrarán automáticamente al crear la reserva.
+            </p>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Documento <span class="required">*</span></label>
+                <input type="text" id="resNuevoDoc" placeholder="Número de documento" />
+                <span class="field-error" id="errResDoc">Obligatorio</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Celular</label>
+                <input type="tel" id="resNuevoCelular" placeholder="Ej: 3101234567" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Nombres <span class="required">*</span></label>
+                <input type="text" id="resNuevoNombres" placeholder="Nombres del cliente" />
+                <span class="field-error" id="errResNombres">Obligatorio</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Apellidos <span class="required">*</span></label>
+                <input type="text" id="resNuevoApellidos" placeholder="Apellidos del cliente" />
+                <span class="field-error" id="errResApellidos">Obligatorio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModalRes()">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarRes">Guardar Reserva</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR RESERVA -->
+<div class="modal-overlay hidden" id="modalEditarRes">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Editar Reserva</span>
+      <button class="modal-close" onclick="cerrarModalEditarRes()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="formEditarRes">
+        <input type="hidden" id="editResId" />
+        <div class="form-group">
+          <label class="form-label">Fecha y Hora</label>
+          <input type="datetime-local" id="editResFecha" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Servicio</label>
+          <select id="editResServicio">
+            <option value="">Sin cambio</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Profesional</label>
+          <select id="editResProfesional">
+            <option value="">Sin cambio</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModalEditarRes()">Cancelar</button>
+      <button class="btn btn-warning" id="btnActualizarRes">Actualizar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/reservas.js"></script>
+</body>
+</html>

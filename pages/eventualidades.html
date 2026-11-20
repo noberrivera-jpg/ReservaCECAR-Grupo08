@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gestión de eventualidades (períodos de indisponibilidad) de los profesionales." />
+  <title>Eventualidades – ReservaCECAR</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">📅</div>
+      <div class="sidebar-brand">ReservaCECAR<small>Grupo08</small></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">Principal</div>
+      <a href="../dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Gestión</div>
+      <a href="clientes.html" class="nav-item"><span class="nav-icon">👤</span> Clientes</a>
+      <a href="especialidades.html" class="nav-item"><span class="nav-icon">🌟</span> Especialidades</a>
+      <a href="profesionales.html" class="nav-item"><span class="nav-icon">👨‍💼</span> Profesionales</a>
+      <a href="servicios.html" class="nav-item"><span class="nav-icon">🛎️</span> Servicios</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Operación</div>
+      <a href="horarios.html" class="nav-item"><span class="nav-icon">🕐</span> Horarios</a>
+      <a href="eventualidades.html" class="nav-item active"><span class="nav-icon">⚠️</span> Eventualidades</a>
+      <a href="disponibilidad.html" class="nav-item"><span class="nav-icon">📊</span> Disponibilidad</a>
+      <a href="reservas.html" class="nav-item"><span class="nav-icon">📋</span> Reservas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="avatarInicial">G</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="userName">Gestor</div>
+          <div class="sidebar-user-role" id="companyName">Grupo08</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <span class="navbar-title">Eventualidades</span>
+      </div>
+      <div class="navbar-right">
+        <span class="navbar-company">Empresa: <span>Grupo08</span></span>
+      </div>
+    </nav>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h1>Gestión de Eventualidades</h1>
+          <p>Registra períodos de indisponibilidad de los profesionales.</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-primary" id="btnNuevaEventualidad">➕ Nueva Eventualidad</button>
+        </div>
+      </div>
+
+      <!-- Filtro por profesional -->
+      <div class="filters-bar">
+        <div class="form-group">
+          <label class="form-label">Filtrar por profesional</label>
+          <select id="filtroProfesionalEv">
+            <option value="">Todos los profesionales</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" id="btnFiltrarEv">Filtrar</button>
+        <button class="btn btn-secondary" id="btnTodosEv">Todos</button>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Lista de Eventualidades</span>
+          <span class="text-muted" id="totalEv" style="font-size:.875rem"></span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Profesional</th>
+                <th>Motivo</th>
+                <th>Observación</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="bodyEv">
+              <tr><td colspan="6" class="table-empty">Cargando eventualidades...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL CREAR / EDITAR EVENTUALIDAD -->
+<div class="modal-overlay hidden" id="modalEv">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title" id="modalEvTitulo">Nueva Eventualidad</span>
+      <button class="modal-close" onclick="cerrarModalEv()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="evId" />
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Profesional <span class="required">*</span></label>
+          <select id="evProfesional" required>
+            <option value="">Selecciona...</option>
+          </select>
+          <span class="field-error" id="errEvPro">Obligatorio</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Motivo <span class="required">*</span></label>
+          <select id="evMotivo" required>
+            <option value="">Selecciona motivo...</option>
+            <option value="1">Enfermedad</option>
+            <option value="2">Vacaciones</option>
+            <option value="3">Capacitación</option>
+            <option value="4">Permiso personal</option>
+            <option value="5">Otro</option>
+          </select>
+          <span class="field-error" id="errEvMotivo">Obligatorio</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Observación</label>
+        <textarea id="evObservacion" placeholder="Información adicional (opcional)..." rows="2"></textarea>
+      </div>
+
+      <!-- Períodos de indisponibilidad -->
+      <div style="margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between">
+        <label class="form-label" style="margin:0">Períodos de indisponibilidad <span class="required">*</span></label>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="agregarPeriodo()">➕ Agregar período</button>
+      </div>
+      <div id="contenedorPeriodos">
+        <!-- Los períodos se agregan dinámicamente -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModalEv()">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarEv">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/eventualidades.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gestión del catálogo de servicios del centro ReservaCECAR." />
+  <title>Servicios – ReservaCECAR</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">📅</div>
+      <div class="sidebar-brand">ReservaCECAR<small>Grupo08</small></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">Principal</div>
+      <a href="../dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Gestión</div>
+      <a href="clientes.html" class="nav-item"><span class="nav-icon">👤</span> Clientes</a>
+      <a href="especialidades.html" class="nav-item"><span class="nav-icon">🌟</span> Especialidades</a>
+      <a href="profesionales.html" class="nav-item"><span class="nav-icon">👨‍💼</span> Profesionales</a>
+      <a href="servicios.html" class="nav-item active"><span class="nav-icon">🛎️</span> Servicios</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Operación</div>
+      <a href="horarios.html" class="nav-item"><span class="nav-icon">🕐</span> Horarios</a>
+      <a href="eventualidades.html" class="nav-item"><span class="nav-icon">⚠️</span> Eventualidades</a>
+      <a href="disponibilidad.html" class="nav-item"><span class="nav-icon">📊</span> Disponibilidad</a>
+      <a href="reservas.html" class="nav-item"><span class="nav-icon">📋</span> Reservas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="avatarInicial">G</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="userName">Gestor</div>
+          <div class="sidebar-user-role" id="companyName">Grupo08</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <span class="navbar-title">Servicios</span>
+      </div>
+      <div class="navbar-right">
+        <span class="navbar-company">Empresa: <span>Grupo08</span></span>
+      </div>
+    </nav>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h1>Catálogo de Servicios</h1>
+          <p>Gestiona los servicios ofrecidos: precio, duración y especialidad.</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-primary" id="btnNuevoServicio">➕ Nuevo Servicio</button>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Lista de Servicios</span>
+          <span class="text-muted" id="totalServicios" style="font-size:.875rem"></span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Duración</th>
+                <th>Especialidad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="bodyServicios">
+              <tr><td colspan="7" class="table-empty">Cargando servicios...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL CREAR / EDITAR SERVICIO -->
+<div class="modal-overlay hidden" id="modalServicio">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title" id="modalSrvTitulo">Nuevo Servicio</span>
+      <button class="modal-close" onclick="cerrarModalSrv()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="formServicio" novalidate>
+        <input type="hidden" id="srvId" />
+
+        <div class="form-group">
+          <label class="form-label">Nombre <span class="required">*</span></label>
+          <input type="text" id="srvNombre" placeholder="Ej: Corte de Cabello Premium" required />
+          <span class="field-error" id="errSrvNombre">Obligatorio</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descripción <span class="required">*</span></label>
+          <textarea id="srvDescripcion" placeholder="Descripción del servicio..." rows="2" required></textarea>
+          <span class="field-error" id="errSrvDescripcion">Obligatorio</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Precio (COP) <span class="required">*</span></label>
+            <input type="number" id="srvPrecio" placeholder="Ej: 25000" min="0" required />
+            <span class="field-error" id="errSrvPrecio">Ingresa un precio válido</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duración (minutos) <span class="required">*</span></label>
+            <input type="number" id="srvDuracion" placeholder="Ej: 30" min="1" required />
+            <span class="field-error" id="errSrvDuracion">Ingresa duración mayor a 0</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Especialidad <span class="required">*</span></label>
+            <select id="srvEspecialidad" required>
+              <option value="">Selecciona especialidad...</option>
+            </select>
+            <span class="field-error" id="errSrvEspecialidad">Selecciona una especialidad</span>
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end">
+            <div class="form-check" style="width:100%">
+              <input type="checkbox" id="srvActivo" checked />
+              <label for="srvActivo">Servicio activo</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModalSrv()">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarSrv">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/servicios.js"></script>
+</body>
+</html>

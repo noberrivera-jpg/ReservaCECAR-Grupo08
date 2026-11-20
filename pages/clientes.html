@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gestión de clientes del centro de servicios ReservaCECAR." />
+  <title>Clientes – ReservaCECAR</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">📅</div>
+      <div class="sidebar-brand">ReservaCECAR<small>Grupo08</small></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">Principal</div>
+      <a href="../dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Gestión</div>
+      <a href="clientes.html" class="nav-item active"><span class="nav-icon">👤</span> Clientes</a>
+      <a href="especialidades.html" class="nav-item"><span class="nav-icon">🌟</span> Especialidades</a>
+      <a href="profesionales.html" class="nav-item"><span class="nav-icon">👨‍💼</span> Profesionales</a>
+      <a href="servicios.html" class="nav-item"><span class="nav-icon">🛎️</span> Servicios</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Operación</div>
+      <a href="horarios.html" class="nav-item"><span class="nav-icon">🕐</span> Horarios</a>
+      <a href="eventualidades.html" class="nav-item"><span class="nav-icon">⚠️</span> Eventualidades</a>
+      <a href="disponibilidad.html" class="nav-item"><span class="nav-icon">📊</span> Disponibilidad</a>
+      <a href="reservas.html" class="nav-item"><span class="nav-icon">📋</span> Reservas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="avatarInicial">G</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="userName">Gestor</div>
+          <div class="sidebar-user-role" id="companyName">Grupo08</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <span class="navbar-title">Clientes</span>
+      </div>
+      <div class="navbar-right">
+        <span class="navbar-company">Empresa: <span>Grupo08</span></span>
+      </div>
+    </nav>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h1>Gestión de Clientes</h1>
+          <p>Registra, consulta, actualiza y elimina clientes del centro.</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-primary" id="btnNuevoCliente">➕ Nuevo Cliente</button>
+        </div>
+      </div>
+
+      <!-- Barra de búsqueda -->
+      <div class="filters-bar">
+        <div class="form-group">
+          <label class="form-label">Buscar por documento</label>
+          <div class="search-input-wrapper">
+            <span>🔍</span>
+            <input type="text" id="inputBuscarDoc" placeholder="Número de documento..." />
+          </div>
+        </div>
+        <button class="btn btn-secondary" id="btnBuscar">Buscar</button>
+        <button class="btn btn-secondary" id="btnMostrarTodos">Mostrar todos</button>
+      </div>
+
+      <!-- Tabla de clientes -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Lista de Clientes</span>
+          <span class="text-muted" id="totalClientes" style="font-size:.875rem"></span>
+        </div>
+        <div class="table-wrapper">
+          <table id="tablaClientes">
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Celular</th>
+                <th>Correo</th>
+                <th>Nacimiento</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="bodyClientes">
+              <tr><td colspan="7" class="table-empty">Cargando clientes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL CREAR / EDITAR CLIENTE -->
+<div class="modal-overlay hidden" id="modalCliente">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalClienteTitulo">Nuevo Cliente</span>
+      <button class="modal-close" id="btnCerrarModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="formCliente" novalidate>
+        <!-- ID oculto para edición -->
+        <input type="hidden" id="clienteId" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="cliDocumento">Documento <span class="required">*</span></label>
+            <input type="text" id="cliDocumento" placeholder="Ej: 1234567890" required />
+            <span class="field-error" id="errCliDocumento">El documento es obligatorio</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cliFechaNac">Fecha de Nacimiento</label>
+            <input type="date" id="cliFechaNac" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="cliNombres">Nombres <span class="required">*</span></label>
+            <input type="text" id="cliNombres" placeholder="Ej: María Fernanda" required />
+            <span class="field-error" id="errCliNombres">El nombre es obligatorio</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cliApellidos">Apellidos <span class="required">*</span></label>
+            <input type="text" id="cliApellidos" placeholder="Ej: García López" required />
+            <span class="field-error" id="errCliApellidos">El apellido es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="cliCelular">Celular</label>
+            <input type="tel" id="cliCelular" placeholder="Ej: 3101234567" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cliCorreo">Correo electrónico</label>
+            <input type="email" id="cliCorreo" placeholder="Ej: cliente@email.com" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btnCancelarModal">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarCliente">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/clientes.js"></script>
+</body>
+</html>

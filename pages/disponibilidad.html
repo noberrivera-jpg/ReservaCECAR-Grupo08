@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Consulta la disponibilidad de profesionales y horarios para reservar." />
+  <title>Disponibilidad – ReservaCECAR</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">📅</div>
+      <div class="sidebar-brand">ReservaCECAR<small>Grupo08</small></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">Principal</div>
+      <a href="../dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Gestión</div>
+      <a href="clientes.html" class="nav-item"><span class="nav-icon">👤</span> Clientes</a>
+      <a href="especialidades.html" class="nav-item"><span class="nav-icon">🌟</span> Especialidades</a>
+      <a href="profesionales.html" class="nav-item"><span class="nav-icon">👨‍💼</span> Profesionales</a>
+      <a href="servicios.html" class="nav-item"><span class="nav-icon">🛎️</span> Servicios</a>
+      <div class="sidebar-section-title" style="margin-top:.75rem">Operación</div>
+      <a href="horarios.html" class="nav-item"><span class="nav-icon">🕐</span> Horarios</a>
+      <a href="eventualidades.html" class="nav-item"><span class="nav-icon">⚠️</span> Eventualidades</a>
+      <a href="disponibilidad.html" class="nav-item active"><span class="nav-icon">📊</span> Disponibilidad</a>
+      <a href="reservas.html" class="nav-item"><span class="nav-icon">📋</span> Reservas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="avatarInicial">G</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="userName">Gestor</div>
+          <div class="sidebar-user-role" id="companyName">Grupo08</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <span class="navbar-title">Disponibilidad</span>
+      </div>
+      <div class="navbar-right">
+        <span class="navbar-company">Empresa: <span>Grupo08</span></span>
+      </div>
+    </nav>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h1>Consulta de Disponibilidad</h1>
+          <p>Consulta los horarios disponibles por fecha, servicio o profesional.</p>
+        </div>
+      </div>
+
+      <!-- Formulario de consulta -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header">
+          <span class="card-title">🔍 Criterios de búsqueda</span>
+        </div>
+        <div style="padding:0 1.5rem 1.5rem">
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label">Fecha <span class="required">*</span></label>
+              <input type="date" id="dispFecha" />
+              <span class="field-error" id="errDispFecha">La fecha es obligatoria</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Servicio (opcional)</label>
+              <select id="dispServicio">
+                <option value="">Todos los servicios</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Profesional (opcional)</label>
+              <select id="dispProfesional">
+                <option value="">Todos los profesionales</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:1rem;margin-top:.5rem">
+            <button class="btn btn-primary" id="btnConsultarDisp">🔍 Consultar Disponibilidad</button>
+            <button class="btn btn-secondary" id="btnConsultarAgenda">📅 Ver Agenda del Día</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div id="seccionResultados" class="hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+          <h2 style="font-size:1.1rem;font-weight:600">
+            Horarios disponibles para <span id="fechaConsultada" style="color:var(--accent-blue)">—</span>
+          </h2>
+          <span class="text-muted" id="totalSlots" style="font-size:.875rem"></span>
+        </div>
+        <div class="slots-grid" id="slotsGrid">
+          <!-- Slots se renderizan aquí -->
+        </div>
+      </div>
+
+      <!-- Agenda del día -->
+      <div id="seccionAgenda" class="hidden">
+        <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">
+          Agenda del día <span id="fechaAgenda" style="color:var(--accent-blue)">—</span>
+        </h2>
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Profesional</th>
+                  <th>Servicio</th>
+                  <th>Hora disponible</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="bodyAgenda">
+                <tr><td colspan="4" class="table-empty">Consulta una fecha para ver la agenda</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sin disponibilidad -->
+      <div id="sinDisponibilidad" class="hidden" style="text-align:center;padding:3rem">
+        <div style="font-size:3rem;margin-bottom:1rem">📭</div>
+        <h3>Sin disponibilidad</h3>
+        <p>No hay horarios disponibles para los criterios seleccionados.<br>Intenta con otra fecha o servicio.</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/disponibilidad.js"></script>
+</body>
+</html>
